@@ -3,6 +3,15 @@ import { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Oauth from "../components/Oauth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { db } from "../firebase";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,11 +23,41 @@ const Signup = () => {
 
   const { name, email, password } = formData;
 
+  const navigate = useNavigate();
+
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
     }));
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const auth = getAuth();
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      updateProfile(auth.currentUser, {
+        displayName: name,
+      });
+
+      const user = userCredentials.user;
+
+      const formDataCopy = { ...formData };
+      delete formData.password;
+      formDataCopy.timeStamp = serverTimestamp();
+      await setDoc(doc(db, "users", user.uid), formData);
+      toast.success("Sign up was successful!");
+      navigate("/");
+    } catch (error) {
+      toast.error("Something went wrong!");
+    }
   };
 
   return (
@@ -33,7 +72,7 @@ const Signup = () => {
           ></img>
         </div>
         <div className="w-full md:w-[60%] lg:w-[40%] lg:ml-20">
-          <form>
+          <form onSubmit={onSubmit}>
             <input
               className="w-full px-4 py-2 text-lg text-gray-600 bg-white border-gray-300 rounded-md transition ease-in-out mb-3"
               type="text"
@@ -92,7 +131,7 @@ const Signup = () => {
             </div>
             <button
               className="w-full text-white bg-teal-600 hover:bg-teal-700 px-6 py-2.5 text-base 
-              font-medium rounded-full uppercase shadow-md transition duration-150 ease-in-out hover:shadow-lg active:bg-teal-800"
+              font-medium rounded-full uppercase shadow-md transition duration-150 ease-in-out hover:shadow-lg active:bg-teal-800 "
               type="submit"
             >
               Sign up
