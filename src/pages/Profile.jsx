@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import { getAuth, updateProfile } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import React, { useState } from "react";
