@@ -12,11 +12,12 @@ import SwiperCore, {
   Pagination,
 } from "swiper";
 import "swiper/css/bundle";
-import "swiper/css/bundle";
+import { FaShare } from "react-icons/fa";
 
 const Listing = () => {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [shareLinkCopied, setShareLinkCopied] = useState(false);
   SwiperCore.use([Autoplay, Navigation, Pagination]);
   const params = useParams();
 
@@ -58,6 +59,25 @@ const Listing = () => {
           </SwiperSlide>
         ))}
       </Swiper>
+      <div
+        className="fixed top-[10%] right-[3%] z-10 bg-white cursor-pointer rounded-full border-2
+         border-gray-400 w-10 h-10 flex justify-center
+      items-center"
+        onClick={() => {
+          navigator.clipboard.writeText(window.location.href);
+          setShareLinkCopied(true);
+          setTimeout(() => {
+            setShareLinkCopied(false);
+          }, 2600);
+        }}
+      >
+        <FaShare className="text-lg text-slate-600" />
+      </div>
+      {shareLinkCopied && (
+        <p className="fixed top-[16%] right-[5%] font-semibold border-2 border-gray-400 bg-white rounded-md z-10 p-2">
+          Link copied
+        </p>
+      )}
     </main>
   );
 };
