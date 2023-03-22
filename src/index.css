@@ -6,3 +6,12 @@ body {
   background-color: #ffffff;
   font-family: sans-serif;
 }
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  color: #00ff00;
+}
+
+.swiper-pagination-progressbar .swiper-pagination-progressbar-fill {
+  background: #00ff00 !important;
+}
